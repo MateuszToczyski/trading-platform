@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
+using TradingPlatform.Factory;
+using TradingPlatform.Service;
 
 namespace TradingPlatform
 {
@@ -11,7 +13,9 @@ namespace TradingPlatform
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (var loginForm = new LoginForm())
+            AccountCreator accountCreator = new AccountCreatorFactory().Create();
+
+            using (var loginForm = new LoginForm(accountCreator))
             {
                 if (loginForm.ShowDialog() == DialogResult.OK)
                 {
