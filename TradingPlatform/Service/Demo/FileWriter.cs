@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace TradingPlatform.DemoDatabase
+namespace TradingPlatform.Service.Demo
 {
     public class FileWriter : FileHandler
     {

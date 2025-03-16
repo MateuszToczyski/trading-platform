@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using TradingPlatform.Model;
+using TradingPlatform.Service.Demo;
 
 namespace TradingPlatform.Repository.Demo
 {

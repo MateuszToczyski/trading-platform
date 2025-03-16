@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TradingPlatform.DemoDatabase
+namespace TradingPlatform.Service.Demo
 {
     public abstract class FileHandler
     {

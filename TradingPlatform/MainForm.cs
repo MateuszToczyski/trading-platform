@@ -1,13 +1,25 @@
 ﻿using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using TradingPlatform.Model;
+using TradingPlatform.Service.CashOperations;
 
 namespace TradingPlatform
 {
     public partial class MainForm : Form
     {
-        public MainForm()
+        private readonly Account account;
+        private readonly DepositHandler depositHandler;
+        private readonly WithdrawalHandler withdrawalHandler;
+
+        public MainForm(Account account, DepositHandler depositHandler, WithdrawalHandler withdrawalHandler)
         {
+            this.account = account;
+            this.depositHandler = depositHandler;
+            this.withdrawalHandler = withdrawalHandler;
+
             InitializeComponent();
+            SetDefaultValues();
+            RefreshComponent();
 
             // TODO
             lstInstruments.Items.Add("KGH");
@@ -31,9 +43,47 @@ namespace TradingPlatform
             // TODO
             dgvOpenPositions.Rows.Add("KGH", 1000, "BUY", 1.1, 1.2, 100);
             dgvOpenPositions.Rows.Add("CDR", 1000, "SELL", 4.5, 4.4, -100);
+            this.withdrawalHandler = withdrawalHandler;
+        }
 
-            // TODO
-            txtAvailableFunds.Text = "0";
+        private void SetDefaultValues()
+        {
+            txtDepositWithdrawal.Text = "0.00";
+        }
+
+        private void RefreshComponent()
+        {
+            txtAvailableFunds.Text = account.CashBalance.ToString();
+        }
+
+        private void btnDeposit_Click(object sender, System.EventArgs e)
+        {
+            string amount = txtDepositWithdrawal.Text;
+            DepositResult result = depositHandler.Deposit(account, amount);
+
+            if (result == DepositResult.InvalidAmount)
+            {
+                MessageBox.Show("Wprowadź poprawną dodatnią kwotę (maks. 2 miejsca dziesiętne po kropce)");
+            }
+
+            RefreshComponent();
+        }
+
+        private void btnWithdrawal_Click(object sender, System.EventArgs e)
+        {
+            string amount = txtDepositWithdrawal.Text;
+            WithdrawalResult result = withdrawalHandler.Withdraw(account, amount);
+
+            if (result == WithdrawalResult.InvalidAmount)
+            {
+                MessageBox.Show("Wprowadź poprawną dodatnią kwotę (maks. 2 miejsca dziesiętne po kropce)");
+            }
+            else if (result == WithdrawalResult.InsufficientFunds)
+            {
+                MessageBox.Show("Brak wystarczających środków na koncie");
+            }
+
+            RefreshComponent();
         }
     }
 }

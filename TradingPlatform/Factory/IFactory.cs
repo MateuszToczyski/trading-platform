@@ -1,4 +1,5 @@
-﻿using TradingPlatform.Service;
+﻿using TradingPlatform.Service.Accounts;
+using TradingPlatform.Service.CashOperations;
 
 namespace TradingPlatform.Factory
 {
@@ -7,5 +8,9 @@ namespace TradingPlatform.Factory
         AccountCreator GetAccountCreator();
 
         LoginHandler GetLoginHandler();
+
+        DepositHandler GetDepositHandler();
+
+        WithdrawalHandler GetWithdrawalHandler();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using TradingPlatform.Model;
 using TradingPlatform.Repository;
 
-namespace TradingPlatform.Service
+namespace TradingPlatform.Service.Accounts
 {
     class AccountGetter
     {

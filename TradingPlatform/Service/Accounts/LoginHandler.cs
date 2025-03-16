@@ -1,7 +1,7 @@
 ﻿using TradingPlatform.Model;
 using TradingPlatform.Repository;
 
-namespace TradingPlatform.Service
+namespace TradingPlatform.Service.Accounts
 {
     public class LoginHandler
     {
@@ -12,7 +12,7 @@ namespace TradingPlatform.Service
             this.getAccountRepository = getAccountRepository;
         }
 
-        public Account Login(string username, string password)
+        public Account LogIn(string username, string password)
         {
             Account account = getAccountRepository.GetAccount(username);
 

@@ -81,6 +81,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Instrument.cs" />
+    <Compile Include="Repository\Demo\DemoInstrumentRepository.cs" />
+    <Compile Include="Repository\Demo\DemoUpdateAccountRepository.cs" />
+    <Compile Include="Repository\IInstrumentRepository.cs" />
+    <Compile Include="Repository\IUpdateAccountRepository.cs" />
+    <Compile Include="Service\Accounts\AccountUpdater.cs" />
+    <Compile Include="Service\CashOperations\AmountValidator.cs" />
+    <Compile Include="Service\CashOperations\DepositHandler.cs" />
+    <Compile Include="Service\CashOperations\WithdrawalHandler.cs" />
     <Compile Include="Service\Demo\FileHandler.cs" />
     <Compile Include="Service\Demo\FileWriter.cs" />
     <Compile Include="Factory\DemoFactory.cs" />
@@ -105,11 +114,11 @@
     <Compile Include="Repository\Demo\DemoGetAccountRepository.cs" />
     <Compile Include="Service\Demo\FileReader.cs" />
     <Compile Include="Repository\IGetAccountRepository.cs" />
-    <Compile Include="Service\Account\AccountGetter.cs" />
-    <Compile Include="Service\Account\AccountCreator.cs" />
-    <Compile Include="Service\Account\LoginHandler.cs" />
-    <Compile Include="Service\Account\LoginValidator.cs" />
-    <Compile Include="Service\Account\PasswordValidator.cs" />
+    <Compile Include="Service\Accounts\AccountGetter.cs" />
+    <Compile Include="Service\Accounts\AccountCreator.cs" />
+    <Compile Include="Service\Accounts\LoginHandler.cs" />
+    <Compile Include="Service\Accounts\LoginValidator.cs" />
+    <Compile Include="Service\Accounts\PasswordValidator.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>

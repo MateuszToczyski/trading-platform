@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using TradingPlatform.Model;
-using TradingPlatform.Service;
+using TradingPlatform.Service.Accounts;
 
 namespace TradingPlatform
 {
     public partial class LoginForm : Form
     {
+        public Account Account { get; private set; }
+
         private readonly AccountCreator accountCreator;
         private readonly LoginHandler loginHandler;
         private readonly CreateAccountMessageResolver createAccountMessageResolver = new CreateAccountMessageResolver();
@@ -19,29 +21,37 @@ namespace TradingPlatform
             InitializeComponent();
         }
 
-        private void btnSignIn_Click(object sender, EventArgs e)
+        private void btnLogIn_Click(object sender, EventArgs e)
         {
-            Account account = loginHandler.Login(txtUsername.Text, txtPassword.Text);
+            TryLogIn(txtUsername.Text, txtPassword.Text);
+        }
 
+        private void btnCreateAccount_Click(object sender, EventArgs e)
+        {
+            string username = txtUsername.Text;
+            string password = txtPassword.Text;
+
+            CreateAccountResult result = accountCreator.CreateAccount(username, password);
+            string message = createAccountMessageResolver.GetMessage(result);
+            MessageBox.Show(message);
+
+            if (result == CreateAccountResult.Success)
+            {
+                TryLogIn(username, password);
+            }
+        }
+
+        private void TryLogIn(string username, string password)
+        {
+            Account account = loginHandler.LogIn(username, password);
+            
             if (account == null)
             {
                 MessageBox.Show("Niepoprawna nazwa użytkownika lub hasło");
             }
             else
             {
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-            }
-        }
-
-        private void btnCreateAccount_Click(object sender, EventArgs e)
-        {
-            CreateAccountResult result = accountCreator.CreateAccount(txtUsername.Text, txtPassword.Text);
-            string message = createAccountMessageResolver.GetMessage(result);
-            MessageBox.Show(message);
-
-            if (result == CreateAccountResult.Success)
-            {
+                Account = account;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

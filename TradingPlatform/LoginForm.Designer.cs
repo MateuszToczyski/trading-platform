@@ -31,7 +31,7 @@
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.btnCreateAccount = new System.Windows.Forms.Button();
-            this.btnSignIn = new System.Windows.Forms.Button();
+            this.btnLogIn = new System.Windows.Forms.Button();
             this.lblLogin = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -61,15 +61,15 @@
             this.btnCreateAccount.UseVisualStyleBackColor = true;
             this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
             // 
-            // btnSignIn
+            // btnLogIn
             // 
-            this.btnSignIn.Location = new System.Drawing.Point(280, 160);
-            this.btnSignIn.Name = "btnSignIn";
-            this.btnSignIn.Size = new System.Drawing.Size(75, 23);
-            this.btnSignIn.TabIndex = 3;
-            this.btnSignIn.Text = "Zaloguj się";
-            this.btnSignIn.UseVisualStyleBackColor = true;
-            this.btnSignIn.Click += new System.EventHandler(this.btnSignIn_Click);
+            this.btnLogIn.Location = new System.Drawing.Point(280, 160);
+            this.btnLogIn.Name = "btnLogIn";
+            this.btnLogIn.Size = new System.Drawing.Size(75, 23);
+            this.btnLogIn.TabIndex = 3;
+            this.btnLogIn.Text = "Zaloguj się";
+            this.btnLogIn.UseVisualStyleBackColor = true;
+            this.btnLogIn.Click += new System.EventHandler(this.btnLogIn_Click);
             // 
             // lblLogin
             // 
@@ -96,7 +96,7 @@
             this.ClientSize = new System.Drawing.Size(535, 321);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblLogin);
-            this.Controls.Add(this.btnSignIn);
+            this.Controls.Add(this.btnLogIn);
             this.Controls.Add(this.btnCreateAccount);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.txtUsername);
@@ -112,7 +112,7 @@
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Button btnCreateAccount;
-        private System.Windows.Forms.Button btnSignIn;
+        private System.Windows.Forms.Button btnLogIn;
         private System.Windows.Forms.Label lblLogin;
         private System.Windows.Forms.Label label1;
     }

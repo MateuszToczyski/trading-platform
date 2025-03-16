@@ -1,4 +1,4 @@
-﻿namespace TradingPlatform.Service
+﻿namespace TradingPlatform.Service.Accounts
 {
     public class PasswordValidator
     {

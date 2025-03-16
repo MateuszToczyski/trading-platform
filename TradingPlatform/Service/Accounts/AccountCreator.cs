@@ -1,7 +1,7 @@
 ﻿using System;
 using TradingPlatform.Repository;
 
-namespace TradingPlatform.Service
+namespace TradingPlatform.Service.Accounts
 {
     public class AccountCreator
     {

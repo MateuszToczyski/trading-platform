@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using TradingPlatform.DemoDatabase;
 
-namespace TradingPlatform.Repository.Demo
+namespace TradingPlatform.Service.Demo
 {
     class FileReader : FileHandler
     {

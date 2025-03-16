@@ -45,6 +45,8 @@
             this.txtCurrentPrice = new System.Windows.Forms.TextBox();
             this.lblOrderValue = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtDepositWithdrawal = new System.Windows.Forms.TextBox();
+            this.lblDepositWithdrawal = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.crtPrices)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOpenPositions)).BeginInit();
             this.SuspendLayout();
@@ -142,21 +144,23 @@
             // 
             // btnDeposit
             // 
-            this.btnDeposit.Location = new System.Drawing.Point(597, 332);
+            this.btnDeposit.Location = new System.Drawing.Point(594, 401);
             this.btnDeposit.Name = "btnDeposit";
             this.btnDeposit.Size = new System.Drawing.Size(75, 23);
             this.btnDeposit.TabIndex = 10;
             this.btnDeposit.Text = "WPŁATA";
             this.btnDeposit.UseVisualStyleBackColor = true;
+            this.btnDeposit.Click += new System.EventHandler(this.btnDeposit_Click);
             // 
             // btnWithdrawal
             // 
-            this.btnWithdrawal.Location = new System.Drawing.Point(678, 332);
+            this.btnWithdrawal.Location = new System.Drawing.Point(675, 401);
             this.btnWithdrawal.Name = "btnWithdrawal";
             this.btnWithdrawal.Size = new System.Drawing.Size(75, 23);
             this.btnWithdrawal.TabIndex = 11;
             this.btnWithdrawal.Text = "WYPŁATA";
             this.btnWithdrawal.UseVisualStyleBackColor = true;
+            this.btnWithdrawal.Click += new System.EventHandler(this.btnWithdrawal_Click);
             // 
             // lblPrice
             // 
@@ -192,11 +196,29 @@
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 15;
             // 
+            // txtDepositWithdrawal
+            // 
+            this.txtDepositWithdrawal.Location = new System.Drawing.Point(594, 375);
+            this.txtDepositWithdrawal.Name = "txtDepositWithdrawal";
+            this.txtDepositWithdrawal.Size = new System.Drawing.Size(100, 20);
+            this.txtDepositWithdrawal.TabIndex = 16;
+            // 
+            // lblDepositWithdrawal
+            // 
+            this.lblDepositWithdrawal.AutoSize = true;
+            this.lblDepositWithdrawal.Location = new System.Drawing.Point(594, 358);
+            this.lblDepositWithdrawal.Name = "lblDepositWithdrawal";
+            this.lblDepositWithdrawal.Size = new System.Drawing.Size(95, 13);
+            this.lblDepositWithdrawal.TabIndex = 17;
+            this.lblDepositWithdrawal.Text = "Wpłata / Wypłata";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(856, 517);
+            this.Controls.Add(this.lblDepositWithdrawal);
+            this.Controls.Add(this.txtDepositWithdrawal);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.lblOrderValue);
             this.Controls.Add(this.txtCurrentPrice);
@@ -240,6 +262,8 @@
         private System.Windows.Forms.TextBox txtCurrentPrice;
         private System.Windows.Forms.Label lblOrderValue;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtDepositWithdrawal;
+        private System.Windows.Forms.Label lblDepositWithdrawal;
     }
 }
 

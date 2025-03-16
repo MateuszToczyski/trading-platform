@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using TradingPlatform.Service.CashOperations;
 
 namespace TradingPlatform.Model
 {
@@ -12,7 +12,7 @@ namespace TradingPlatform.Model
         public string HashedPassword { get; }
 
         [JsonInclude]
-        private List<decimal> cashOperations = new List<decimal>();
+        public decimal CashBalance { get; private set; } = 0;
 
         public Account(string login, string hashedPassword)
         {
@@ -20,27 +20,34 @@ namespace TradingPlatform.Model
             HashedPassword = hashedPassword;
         }
 
-        public bool AddCashOperation(decimal amount)
+        public DepositResult Deposit(decimal amount)
         {
-            if (GetBalance() + amount < 0)
+            if (amount <= 0)
             {
-                return false;
+                return DepositResult.InvalidAmount;
             }
             else
             {
-                cashOperations.Add(amount);
-                return true;
+                CashBalance += amount;
+                return DepositResult.Success;
             }
         }
 
-        public decimal GetBalance()
+        public WithdrawalResult Withdraw(decimal amount)
         {
-            decimal balance = 0;
-            foreach (decimal amount in cashOperations)
+            if (amount <= 0)
             {
-                balance += amount;
+                return WithdrawalResult.InvalidAmount;
             }
-            return balance;
+            else if (CashBalance < amount)
+            {
+                return WithdrawalResult.InsufficientFunds;
+            }
+            else
+            {
+                CashBalance -= amount;
+                return WithdrawalResult.Success;
+            }
         }
     }
 }
