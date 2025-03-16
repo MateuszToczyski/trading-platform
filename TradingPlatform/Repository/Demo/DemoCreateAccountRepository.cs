@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
-using TradingPlatform.Model;
+﻿using TradingPlatform.Model;
+using TradingPlatform.Model.Demo;
+using TradingPlatform.Model.DTO;
 using TradingPlatform.Service.Demo;
 
 namespace TradingPlatform.Repository.Demo
@@ -15,8 +16,9 @@ namespace TradingPlatform.Repository.Demo
 
         public void CreateAccount(string login, string hashedPassword)
         {
-            Account account = new Account(login, hashedPassword);
-            fileWriter.WriteUserFile(login, JsonSerializer.Serialize(account));
+            Account account = new DemoAccount(login, hashedPassword);
+            AccountJson accountJson = new AccountJson(account);
+            fileWriter.WriteUserFile(login, accountJson.ToJsonString());
         }
     }
 }

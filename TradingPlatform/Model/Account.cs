@@ -1,18 +1,13 @@
-﻿using System.Text.Json.Serialization;
+﻿using TradingPlatform.Model.DTO;
 using TradingPlatform.Service.CashOperations;
 
 namespace TradingPlatform.Model
 {
-    public class Account
+    abstract public class Account
     {
-        [JsonInclude]
         public string Login { get; }
-
-        [JsonInclude]
         public string HashedPassword { get; }
-
-        [JsonInclude]
-        public decimal CashBalance { get; private set; } = 0;
+        public decimal CashBalance { get; protected set; }
 
         public Account(string login, string hashedPassword)
         {
@@ -20,34 +15,15 @@ namespace TradingPlatform.Model
             HashedPassword = hashedPassword;
         }
 
-        public DepositResult Deposit(decimal amount)
+        public Account(AccountJson accountJson)
         {
-            if (amount <= 0)
-            {
-                return DepositResult.InvalidAmount;
-            }
-            else
-            {
-                CashBalance += amount;
-                return DepositResult.Success;
-            }
+            Login = accountJson.Login;
+            HashedPassword = accountJson.HashedPassword;
+            CashBalance = accountJson.CashBalance;
         }
 
-        public WithdrawalResult Withdraw(decimal amount)
-        {
-            if (amount <= 0)
-            {
-                return WithdrawalResult.InvalidAmount;
-            }
-            else if (CashBalance < amount)
-            {
-                return WithdrawalResult.InsufficientFunds;
-            }
-            else
-            {
-                CashBalance -= amount;
-                return WithdrawalResult.Success;
-            }
-        }
+        abstract public DepositResult Deposit(decimal amount);
+
+        abstract public WithdrawalResult Withdraw(decimal amount);
     }
 }

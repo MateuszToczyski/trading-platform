@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using TradingPlatform.Model;
+﻿using TradingPlatform.Model;
+using TradingPlatform.Model.DTO;
 using TradingPlatform.Service.Demo;
 
 namespace TradingPlatform.Repository.Demo
@@ -15,8 +15,8 @@ namespace TradingPlatform.Repository.Demo
 
         public void UpdateAccount(Account account)
         {
-            string accountJson = JsonSerializer.Serialize(account);
-            fileWriter.WriteUserFile(account.Login, accountJson);
+            AccountJson accountJson = new AccountJson(account);
+            fileWriter.WriteUserFile(account.Login, accountJson.ToJsonString());
         }
     }
 }

@@ -9,7 +9,7 @@ namespace TradingPlatform.Repository.Demo
         {
             return new List<Instrument>
             {
-                new Instrument("KGHM", InstrumentType.Stock),
+                //new Instrument("KGHM", InstrumentType.Stock),
             };
         }
     }

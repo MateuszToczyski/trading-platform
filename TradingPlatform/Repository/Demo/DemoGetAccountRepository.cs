@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using TradingPlatform.Model;
+using TradingPlatform.Model.Demo;
+using TradingPlatform.Model.DTO;
 using TradingPlatform.Service.Demo;
 
 namespace TradingPlatform.Repository.Demo
@@ -23,7 +25,8 @@ namespace TradingPlatform.Repository.Demo
             }
             else
             {
-                return JsonSerializer.Deserialize<Account>(fileContent);
+                AccountJson accountJson = JsonSerializer.Deserialize<AccountJson>(fileContent);
+                return new DemoAccount(accountJson);
             }
         }
     }
