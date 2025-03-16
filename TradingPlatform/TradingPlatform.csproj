@@ -81,9 +81,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DemoDatabase\FileHandler.cs" />
-    <Compile Include="DemoDatabase\FileWriter.cs" />
-    <Compile Include="Factory\AccountCreatorFactory.cs" />
+    <Compile Include="Service\Demo\FileHandler.cs" />
+    <Compile Include="Service\Demo\FileWriter.cs" />
+    <Compile Include="Factory\DemoFactory.cs" />
     <Compile Include="Factory\IFactory.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
@@ -103,15 +103,13 @@
     <Compile Include="Repository\ICreateAccountRepository.cs" />
     <Compile Include="Repository\Demo\DemoCreateAccountRepository.cs" />
     <Compile Include="Repository\Demo\DemoGetAccountRepository.cs" />
-    <Compile Include="Repository\Demo\DemoLoginRepository.cs" />
-    <Compile Include="DemoDatabase\FileReader.cs" />
+    <Compile Include="Service\Demo\FileReader.cs" />
     <Compile Include="Repository\IGetAccountRepository.cs" />
-    <Compile Include="Repository\ILoginRepository.cs" />
-    <Compile Include="Service\AccountGetter.cs" />
-    <Compile Include="Service\AccountCreator.cs" />
-    <Compile Include="Service\LoginHandler.cs" />
-    <Compile Include="Service\LoginValidator.cs" />
-    <Compile Include="Service\PasswordValidator.cs" />
+    <Compile Include="Service\Account\AccountGetter.cs" />
+    <Compile Include="Service\Account\AccountCreator.cs" />
+    <Compile Include="Service\Account\LoginHandler.cs" />
+    <Compile Include="Service\Account\LoginValidator.cs" />
+    <Compile Include="Service\Account\PasswordValidator.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -141,8 +139,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DemoDatabase\Users\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

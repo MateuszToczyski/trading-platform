@@ -13,9 +13,12 @@ namespace TradingPlatform
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            AccountCreator accountCreator = new AccountCreatorFactory().Create();
+            IFactory factory = new DemoFactory();
 
-            using (var loginForm = new LoginForm(accountCreator))
+            AccountCreator accountCreator = factory.GetAccountCreator();
+            LoginHandler loginHandler = factory.GetLoginHandler();
+
+            using (var loginForm = new LoginForm(accountCreator, loginHandler))
             {
                 if (loginForm.ShowDialog() == DialogResult.OK)
                 {

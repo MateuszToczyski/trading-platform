@@ -28,8 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.lstInstruments = new System.Windows.Forms.ListBox();
             this.crtPrices = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lblOpenPositions = new System.Windows.Forms.Label();
@@ -60,10 +59,8 @@
             // 
             // crtPrices
             // 
-            chartArea3.Name = "ChartArea1";
-            this.crtPrices.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.crtPrices.Legends.Add(legend3);
+            chartArea2.Name = "ChartArea1";
+            this.crtPrices.ChartAreas.Add(chartArea2);
             this.crtPrices.Location = new System.Drawing.Point(13, 13);
             this.crtPrices.Name = "crtPrices";
             this.crtPrices.Size = new System.Drawing.Size(575, 300);
@@ -97,9 +94,9 @@
             this.lblNominal.AutoSize = true;
             this.lblNominal.Location = new System.Drawing.Point(594, 140);
             this.lblNominal.Name = "lblNominal";
-            this.lblNominal.Size = new System.Drawing.Size(29, 13);
+            this.lblNominal.Size = new System.Drawing.Size(66, 13);
             this.lblNominal.TabIndex = 4;
-            this.lblNominal.Text = "Ilość";
+            this.lblNominal.Text = "Liczba sztuk";
             // 
             // textBox1
             // 

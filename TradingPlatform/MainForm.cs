@@ -22,7 +22,7 @@ namespace TradingPlatform
             crtPrices.Series["Kurs"].Points.AddXY(2, 3);
 
             // TODO
-            dgvOpenPositions.Columns.Add("Akcje", "Akcje");
+            dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
             dgvOpenPositions.Columns.Add("Stan posiadania", "Stan posiadania");
             dgvOpenPositions.Columns.Add("Cena otwarcia", "Cena otwarcia");
             dgvOpenPositions.Columns.Add("Cena bieżąca", "Cena bieżąca");
