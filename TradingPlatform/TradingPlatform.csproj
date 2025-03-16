@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Demo\DemoInstrument.cs" />
     <Compile Include="Model\Instrument.cs" />
     <Compile Include="Repository\Demo\DemoInstrumentRepository.cs" />
     <Compile Include="Repository\Demo\DemoUpdateAccountRepository.cs" />
