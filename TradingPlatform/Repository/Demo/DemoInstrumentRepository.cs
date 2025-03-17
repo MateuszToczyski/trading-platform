@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using TradingPlatform.Model;
+using TradingPlatform.Model.Demo;
 
 namespace TradingPlatform.Repository.Demo
 {
-    class DemoInstrumentRepository : IInstrumentRepository
+    public class DemoInstrumentRepository : IInstrumentRepository
     {
         public List<Instrument> GetAllInstruments()
         {
             return new List<Instrument>
             {
-                //new Instrument("KGHM", InstrumentType.Stock),
+                new DemoInstrument("KGHM", InstrumentType.Akcje),
+                new DemoInstrument("PKN Orlen", InstrumentType.Akcje),
+                new DemoInstrument("PZU 0727", InstrumentType.Obligacje),
             };
         }
     }

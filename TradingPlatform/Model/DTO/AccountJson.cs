@@ -14,6 +14,14 @@ namespace TradingPlatform.Model.DTO
         [JsonInclude]
         public decimal CashBalance { get; }
 
+        [JsonConstructor]
+        public AccountJson(string login, string hashedPassword, decimal cashBalance)
+        {
+            Login = login;
+            HashedPassword = hashedPassword;
+            CashBalance = cashBalance;
+        }
+
         public AccountJson(Account account)
         {
             Login = account.Login;

@@ -1,37 +1,38 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using TradingPlatform.Model;
 using TradingPlatform.Service.CashOperations;
+using TradingPlatform.Service.Instruments;
+using TradingPlatform.Service.Prices;
 
 namespace TradingPlatform
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IPriceObserver
     {
+        private readonly static string CHART_SERIES_NAME = "Kurs";
+
         private readonly Account account;
         private readonly DepositHandler depositHandler;
         private readonly WithdrawalHandler withdrawalHandler;
+        private readonly InstrumentProvider instrumentProvider;
 
-        public MainForm(Account account, DepositHandler depositHandler, WithdrawalHandler withdrawalHandler)
+        private string currentInstrument;
+
+        public MainForm(
+            Account account,
+            DepositHandler depositHandler,
+            WithdrawalHandler withdrawalHandler,
+            InstrumentProvider instrumentProvider)
         {
             this.account = account;
             this.depositHandler = depositHandler;
             this.withdrawalHandler = withdrawalHandler;
+            this.instrumentProvider = instrumentProvider;
 
             InitializeComponent();
-            SetDefaultValues();
+            SetInitialValues();
             RefreshComponent();
-
-            // TODO
-            lstInstruments.Items.Add("KGH");
-            lstInstruments.Items.Add("CDR");
-            lstInstruments.Items.Add("LTS");
-
-            // TODO
-            crtPrices.Series.Add("Kurs");
-            crtPrices.Series["Kurs"].ChartType = SeriesChartType.Line;
-            crtPrices.Series["Kurs"].Points.AddXY(0, 1);
-            crtPrices.Series["Kurs"].Points.AddXY(1, 2);
-            crtPrices.Series["Kurs"].Points.AddXY(2, 3);
 
             // TODO
             dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
@@ -46,12 +47,59 @@ namespace TradingPlatform
             this.withdrawalHandler = withdrawalHandler;
         }
 
-        private void SetDefaultValues()
+        public void HandlePricesPublished(Dictionary<string, decimal> prices)
+        {
+            decimal currentInstrumentPrice = prices[currentInstrument];
+
+            if (currentInstrumentPrice != 0)
+            {
+                // Ceny publikowane są w osobnym wątku - komponenty interfejsu graficznego muszą być modyfikowane w dedykowanym wątku
+                crtPrices.Invoke((MethodInvoker)delegate
+                {
+                    crtPrices.Series[CHART_SERIES_NAME].Points.AddY(currentInstrumentPrice);
+                    crtPrices.ChartAreas[0].AxisY.Minimum = ((double)currentInstrumentPrice) * 0.95;
+                    crtPrices.ChartAreas[0].AxisY.Maximum = ((double)currentInstrumentPrice) * 1.05;
+                });
+            }
+        }
+
+        private void SetInitialValues()
+        {
+            SetInitialDepositWithdrawalText();
+            SetInitialInstrumentList();
+            SetUpPriceChart();
+        }
+
+        private void RefreshComponent()
+        {
+            RefreshAvailableFunds();
+        }
+
+        private void SetInitialDepositWithdrawalText()
         {
             txtDepositWithdrawal.Text = "0.00";
         }
 
-        private void RefreshComponent()
+        private void SetInitialInstrumentList()
+        {
+            lstInstruments.Items.Clear();
+
+            foreach (Instrument instrument in instrumentProvider.GetAllInstruments())
+            {
+                lstInstruments.Items.Add(instrument.Name);
+            }
+
+            lstInstruments.SelectedIndex = 0;
+            currentInstrument = lstInstruments.SelectedItem.ToString();
+        }
+
+        private void SetUpPriceChart()
+        {
+            crtPrices.Series.Add(CHART_SERIES_NAME);
+            crtPrices.Series[CHART_SERIES_NAME].ChartType = SeriesChartType.Line;
+        }
+
+        private void RefreshAvailableFunds()
         {
             txtAvailableFunds.Text = account.CashBalance.ToString();
         }

@@ -2,13 +2,11 @@
 {
     public class DemoInstrument : Instrument
     {
-        public DemoInstrument(string name, InstrumentType type) : base(name, type)
-        {
-        }
+        public DemoInstrument(string name, InstrumentType type) : base(name, type) { }
 
         public override string GetFullName()
         {
-            return base.GetFullName() + " [DEMO]";
+            return $"{base.GetFullName()} [DEMO]";
         }
     }
 }

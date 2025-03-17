@@ -117,11 +117,14 @@
     <Compile Include="Repository\Demo\DemoGetAccountRepository.cs" />
     <Compile Include="Service\Demo\FileReader.cs" />
     <Compile Include="Repository\IGetAccountRepository.cs" />
-    <Compile Include="Service\Accounts\AccountGetter.cs" />
     <Compile Include="Service\Accounts\AccountCreator.cs" />
     <Compile Include="Service\Accounts\LoginHandler.cs" />
     <Compile Include="Service\Accounts\LoginValidator.cs" />
     <Compile Include="Service\Accounts\PasswordValidator.cs" />
+    <Compile Include="Service\Instruments\InstrumentProvider.cs" />
+    <Compile Include="Service\Prices\Demo\DemoPricePublisher.cs" />
+    <Compile Include="Service\Prices\IPriceObserver.cs" />
+    <Compile Include="Service\Prices\PricePublisher.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>

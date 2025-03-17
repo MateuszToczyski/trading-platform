@@ -3,59 +3,61 @@ using TradingPlatform.Repository.Demo;
 using TradingPlatform.Service.Accounts;
 using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Demo;
+using TradingPlatform.Service.Instruments;
+using TradingPlatform.Service.Prices;
+using TradingPlatform.Service.Prices.Demo;
 
 namespace TradingPlatform.Factory
 {
     public class DemoFactory : IFactory
     {
-        private readonly LoginValidator loginValidator = new LoginValidator();
-        private readonly PasswordValidator passwordValidator = new PasswordValidator();
         private readonly AmountValidator amountValidator = new AmountValidator();
-
-        private readonly FileReader fileReader = new FileReader();
         private readonly FileWriter fileWriter = new FileWriter();
 
         private readonly IGetAccountRepository getAccountRepository;
         private readonly ICreateAccountRepository createAccountRepository;
         private readonly IUpdateAccountRepository updateAccountRepository;
+        private readonly IInstrumentRepository instrumentRepository;
 
-        private readonly AccountCreator accountCreator;
         private readonly AccountUpdater accountUpdater;
-        private readonly LoginHandler loginHandler;
-        private readonly DepositHandler depositHandler;
-        private readonly WithdrawalHandler withdrawalHandler;
 
         public DemoFactory()
         {
-            getAccountRepository = new DemoGetAccountRepository(fileReader);
+            getAccountRepository = new DemoGetAccountRepository(new FileReader());
             createAccountRepository = new DemoCreateAccountRepository(fileWriter);
             updateAccountRepository = new DemoUpdateAccountRepository(fileWriter);
-
-            accountCreator = new AccountCreator(createAccountRepository, getAccountRepository, loginValidator, passwordValidator);
-            loginHandler = new LoginHandler(getAccountRepository);
+            instrumentRepository = new DemoInstrumentRepository();
             accountUpdater = new AccountUpdater(updateAccountRepository);
-            depositHandler = new DepositHandler(accountUpdater, amountValidator);
-            withdrawalHandler = new WithdrawalHandler(accountUpdater, amountValidator);
         }
 
         public AccountCreator GetAccountCreator()
         {
-            return accountCreator;
+            return new AccountCreator(createAccountRepository, getAccountRepository, new LoginValidator(), new PasswordValidator());
         }
 
         public LoginHandler GetLoginHandler()
         {
-            return loginHandler;
+            return new LoginHandler(getAccountRepository);
         }
 
         public DepositHandler GetDepositHandler()
         {
-            return depositHandler;
+            return new DepositHandler(accountUpdater, amountValidator);
         }
 
         public WithdrawalHandler GetWithdrawalHandler()
         {
-            return withdrawalHandler;
+            return new WithdrawalHandler(accountUpdater, amountValidator);
+        }
+
+        public InstrumentProvider GetInstrumentProvider()
+        {
+            return new InstrumentProvider(instrumentRepository);
+        }
+
+        public PricePublisher GetPricePublisher()
+        {
+            return new DemoPricePublisher();
         }
     }
 }

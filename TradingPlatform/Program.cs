@@ -4,6 +4,8 @@ using TradingPlatform.Factory;
 using TradingPlatform.Model;
 using TradingPlatform.Service.Accounts;
 using TradingPlatform.Service.CashOperations;
+using TradingPlatform.Service.Instruments;
+using TradingPlatform.Service.Prices;
 
 namespace TradingPlatform
 {
@@ -19,21 +21,34 @@ namespace TradingPlatform
 
             AccountCreator accountCreator = factory.GetAccountCreator();
             LoginHandler loginHandler = factory.GetLoginHandler();
-            DepositHandler depositHandler = factory.GetDepositHandler();
-            WithdrawalHandler withdrawalHandler = factory.GetWithdrawalHandler();
 
             using (var loginForm = new LoginForm(accountCreator, loginHandler))
             {
                 if (loginForm.ShowDialog() == DialogResult.OK)
                 {
                     Account account = loginForm.Account;
-                    Application.Run(new MainForm(account, depositHandler, withdrawalHandler));
+                    RunApplication(factory, account);
                 }
                 else
                 {
                     Application.Exit();
                 }
             }
+        }
+
+        private static void RunApplication(IFactory factory, Account account)
+        {
+            DepositHandler depositHandler = factory.GetDepositHandler();
+            WithdrawalHandler withdrawalHandler = factory.GetWithdrawalHandler();
+            InstrumentProvider instrumentProvider = factory.GetInstrumentProvider();
+
+            MainForm mainForm = new MainForm(account, depositHandler, withdrawalHandler, instrumentProvider);
+
+            PricePublisher pricePublisher = factory.GetPricePublisher();
+            pricePublisher.AddObserver(mainForm);
+            pricePublisher.Start();
+
+            Application.Run(mainForm);
         }
     }
 }

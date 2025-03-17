@@ -3,7 +3,7 @@ using TradingPlatform.Model;
 
 namespace TradingPlatform.Repository
 {
-    interface IInstrumentRepository
+    public interface IInstrumentRepository
     {
         List<Instrument> GetAllInstruments();
     }
