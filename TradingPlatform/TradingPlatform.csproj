@@ -81,11 +81,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Json\JsonOptions.cs" />
     <Compile Include="Model\Demo\DemoAccount.cs" />
     <Compile Include="Model\Demo\DemoInstrument.cs" />
     <Compile Include="Model\DTO\AccountJson.cs" />
     <Compile Include="Model\DTO\InstrumentJson.cs" />
     <Compile Include="Model\Instrument.cs" />
+    <Compile Include="Model\OpenPosition.cs" />
     <Compile Include="Repository\Demo\DemoInstrumentRepository.cs" />
     <Compile Include="Repository\Demo\DemoUpdateAccountRepository.cs" />
     <Compile Include="Repository\IInstrumentRepository.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using TradingPlatform.Model;
@@ -26,8 +27,6 @@ namespace TradingPlatform
         private int currentOrderVolume = 0;
         private Dictionary<string, Instrument> instruments = new Dictionary<string, Instrument>();
 
-        public bool SetUpComplete { get; private set; } = false;
-
         public MainForm(
             Account account,
             DepositHandler depositHandler,
@@ -42,13 +41,23 @@ namespace TradingPlatform
             this.orderHandler = orderHandler;
 
             InitializeComponent();
-            SetUpComplete = true;
         }
 
         public void Initialize()
         {
-            SetInitialValues();
-            RefreshDisplayedValues();
+            while (true)
+            {
+                try
+                {
+                    SetInitialValues();
+                    RefreshDisplayedValues();
+                    return;
+                }
+                catch
+                {
+                    Thread.Sleep(100);
+                }
+            }
         }
 
         public void HandlePricesPublished(Dictionary<string, decimal> prices)
@@ -84,26 +93,39 @@ namespace TradingPlatform
 
         private void SetUpOpenPositionsTable()
         {
-            dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
-            dgvOpenPositions.Columns.Add("Stan posiadania", "Stan posiadania");
-            dgvOpenPositions.Columns.Add("Wartość bieżąca", "Wartość bieżąca");
+            dgvOpenPositions.Invoke((MethodInvoker)delegate
+            {
+                dgvOpenPositions.Columns.Clear();
+                dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
+                dgvOpenPositions.Columns.Add("Stan posiadania", "Stan posiadania");
+                dgvOpenPositions.Columns.Add("Wartość bieżąca", "Wartość bieżąca");
+            });
         }
 
         private void RefreshOpenPositions()
         {
-            dgvOpenPositions.Rows.Clear();
-            
-            foreach (KeyValuePair<Instrument, int> entry in account.OpenPositions.ToList())
+            dgvOpenPositions.Invoke((MethodInvoker)delegate
             {
-                Instrument instrument = entry.Key;
-                int volume = entry.Value;
-                dgvOpenPositions.Rows.Add(instrument.GetFullName(), volume, volume * currentPrice);
-            }
+                dgvOpenPositions.Rows.Clear();
+
+                foreach (OpenPosition position in account.OpenPositions)
+                {
+                    Instrument instrument = position.Instrument;
+                    int volume = position.Volume;
+                    dgvOpenPositions.Rows.Add(instrument.GetFullName(), volume, volume * currentPrice);
+                }
+
+                dgvOpenPositions.AutoResizeColumns();
+                dgvOpenPositions.AutoResizeRows();
+            });
         }
 
         private void SetInitialDepositWithdrawalText()
         {
-            txtDepositWithdrawal.Text = "0.00";
+            txtDepositWithdrawal.Invoke((MethodInvoker)delegate
+            {
+                txtDepositWithdrawal.Text = "0.00";
+            });
         }
 
         private void SetInitialInstrumentList()
@@ -111,21 +133,28 @@ namespace TradingPlatform
             List<Instrument> instruments = instrumentProvider.GetAllInstruments();
             this.instruments = instruments.ToDictionary(instrument => instrument.Name);
 
-            lstInstruments.Items.Clear();
-
-            foreach (Instrument instrument in instruments)
+            lstInstruments.Invoke((MethodInvoker)delegate
             {
-                lstInstruments.Items.Add(instrument.Name);
-            }
+                lstInstruments.Items.Clear();
 
-            lstInstruments.SelectedIndex = 0;
-            currentInstrument = this.instruments[lstInstruments.SelectedItem.ToString()];
+                foreach (Instrument instrument in instruments)
+                {
+                    lstInstruments.Items.Add(instrument.Name);
+                }
+
+                lstInstruments.SelectedIndex = 0;
+                currentInstrument = this.instruments[lstInstruments.SelectedItem.ToString()];
+            });
         }
 
         private void SetUpPriceChart()
         {
-            crtPrices.Series.Add(CHART_SERIES_NAME);
-            crtPrices.Series[CHART_SERIES_NAME].ChartType = SeriesChartType.Line;
+            crtPrices.Invoke((MethodInvoker)delegate
+            {
+                crtPrices.Series.Clear();
+                crtPrices.Series.Add(CHART_SERIES_NAME);
+                crtPrices.Series[CHART_SERIES_NAME].ChartType = SeriesChartType.Line;
+            });
         }
 
         private void AddCurrentPriceToChart()
@@ -148,7 +177,10 @@ namespace TradingPlatform
 
         private void RefreshAvailableFunds()
         {
-            txtAvailableFunds.Text = account.CashBalance.ToString();
+            txtAvailableFunds.Invoke((MethodInvoker)delegate
+            {
+                txtAvailableFunds.Text = account.CashBalance.ToString();
+            });
         }
 
         private void RefreshOrderValue()
@@ -208,7 +240,10 @@ namespace TradingPlatform
 
             if (crtPrices.Series.Count > 0)
             {
-                crtPrices.Series[CHART_SERIES_NAME].Points.Clear();
+                crtPrices.Invoke((MethodInvoker)delegate
+                {
+                    crtPrices.Series[CHART_SERIES_NAME].Points.Clear();
+                }); 
             }
         }
 

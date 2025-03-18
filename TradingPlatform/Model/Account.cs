@@ -11,17 +11,17 @@ namespace TradingPlatform.Model
         public string HashedPassword { get; }
         public decimal CashBalance { get; protected set; }
         
-        public Dictionary<Instrument, int> OpenPositions
+        public List<OpenPosition> OpenPositions
         {
             get
             {
-                return openPositions.ToDictionary(entry => entry.Key, entry => entry.Value);
+                return openPositions.ToList();
             }
         }
 
-        protected readonly Dictionary<Instrument, int> openPositions;
+        protected readonly List<OpenPosition> openPositions;
 
-        public Account(string login, string hashedPassword, decimal cashBalance, Dictionary<Instrument, int> openPositions)
+        public Account(string login, string hashedPassword, decimal cashBalance, List<OpenPosition> openPositions)
         {
             Login = login;
             HashedPassword = hashedPassword;

@@ -49,6 +49,7 @@ namespace TradingPlatform
             MainForm mainForm = new MainForm(account, depositHandler, withdrawalHandler, instrumentProvider, orderHandler);
 
             Thread mainFormThread = new Thread(() => Application.Run(mainForm)) { IsBackground = false };
+            mainFormThread.Start();
 
             pricePublisher.Start();
             mainForm.Initialize();

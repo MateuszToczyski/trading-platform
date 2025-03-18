@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using TradingPlatform.Model.DTO;
 using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Orders;
@@ -9,14 +8,10 @@ namespace TradingPlatform.Model.Demo
     public class DemoAccount : Account
     {
         public DemoAccount(string login, string hashedPassword) :
-            base(login, hashedPassword, 0, new Dictionary<Instrument, int>()) { }
+            base(login, hashedPassword, 0, new List<OpenPosition>()) { }
 
-        public DemoAccount(AccountJson json) : base(
-            json.Login,
-            json.HashedPassword,
-            json.CashBalance,
-            json.OpenPositions.ToDictionary(entry => (Instrument)new DemoInstrument(entry.Key), entry => entry.Value)
-        ) { }
+        public DemoAccount(AccountJson json) :
+            base(json.Login, json.HashedPassword, json.CashBalance, json.OpenPositions) { }
 
         // Wersja demonstracyjna - brak obsugi dostawców płatności, kont bankowych itp.
         override public DepositResult Deposit(decimal amount)
@@ -69,17 +64,7 @@ namespace TradingPlatform.Model.Demo
             }
             else
             {
-                CashBalance -= orderValue;
-
-                if (openPositions.ContainsKey(instrument))
-                {
-                    openPositions[instrument] = openPositions[instrument] += volume;
-                }
-                else
-                {
-                    openPositions.Add(instrument, volume);
-                }
-
+                HandleBuyOperation(instrument, volume, orderValue);
                 return BuyOrderResult.Success;
             }
         }
@@ -97,20 +82,46 @@ namespace TradingPlatform.Model.Demo
 
             decimal orderValue = volume * price;
 
-            if (!openPositions.ContainsKey(instrument) || openPositions[instrument] < volume)
+            if (openPositions.Contains(openPositions.Find(x => x.Instrument.Name == instrument.Name)))
+            {
+                return HandleSellOperation(instrument, volume, orderValue);
+            }
+            else
+            {
+                return SellOrderResult.InsufficientPosition;
+            }
+        }
+
+        private void HandleBuyOperation(Instrument instrument, int volume, decimal orderValue)
+        {
+            CashBalance -= orderValue;
+
+            if (openPositions.Contains(openPositions.Find(x => x.Instrument.Name == instrument.Name)))
+            {
+                openPositions.Find(x => x.Instrument == instrument).Volume += volume;
+            }
+            else
+            {
+                openPositions.Add(new OpenPosition(instrument, volume));
+            }
+        }
+
+        private SellOrderResult HandleSellOperation(Instrument instrument, int volume, decimal orderValue)
+        {
+            OpenPosition position = openPositions.Find(x => x.Instrument.Name == instrument.Name);
+
+            if (position.Volume < volume)
             {
                 return SellOrderResult.InsufficientPosition;
             }
             else
             {
                 CashBalance += orderValue;
-                openPositions[instrument] -= volume;
-
-                if (openPositions[instrument] == 0)
+                position.Volume -= volume;
+                if (position.Volume == 0)
                 {
-                    openPositions.Remove(instrument);
+                    openPositions.Remove(position);
                 }
-
                 return SellOrderResult.Success;
             }
         }

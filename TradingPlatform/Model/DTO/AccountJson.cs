@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TradingPlatform.Json;
 
 namespace TradingPlatform.Model.DTO
 {
@@ -17,19 +18,19 @@ namespace TradingPlatform.Model.DTO
         public decimal CashBalance { get; }
 
         [JsonInclude]
-        public Dictionary<InstrumentJson, int> OpenPositions
+        public List<OpenPosition> OpenPositions
         {
             get
             {
-                return openPositions.ToDictionary(entry => entry.Key, entry => entry.Value);
+                return openPositions.ToList();
             }
         }
 
         [JsonIgnore]
-        private readonly Dictionary<InstrumentJson, int> openPositions;
+        private readonly List<OpenPosition> openPositions;
 
         [JsonConstructor]
-        public AccountJson(string login, string hashedPassword, decimal cashBalance, Dictionary<InstrumentJson, int> openPositions)
+        public AccountJson(string login, string hashedPassword, decimal cashBalance, List<OpenPosition> openPositions)
         {
             Login = login;
             HashedPassword = hashedPassword;
@@ -42,12 +43,12 @@ namespace TradingPlatform.Model.DTO
             Login = account.Login;
             HashedPassword = account.HashedPassword;
             CashBalance = account.CashBalance;
-            openPositions = account.OpenPositions.ToDictionary(entry => new InstrumentJson(entry.Key), entry => entry.Value);
+            openPositions = account.OpenPositions;
         }
 
         public string ToJsonString()
         {
-            return JsonSerializer.Serialize(this);
+            return JsonSerializer.Serialize(this, JsonOptions.WithEnumConversion);
         }
     }
 }
