@@ -1,4 +1,5 @@
-﻿using TradingPlatform.Repository;
+﻿using TradingPlatform.Model;
+using TradingPlatform.Repository;
 
 namespace TradingPlatform.Service.Accounts
 {
@@ -11,7 +12,7 @@ namespace TradingPlatform.Service.Accounts
             this.updateAccountRepository = updateAccountRepository;
         }
 
-        public void UpdateAccount(Model.Account account)
+        public void UpdateAccount(Account account)
         {
             updateAccountRepository.UpdateAccount(account);
         }

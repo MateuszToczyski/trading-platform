@@ -45,7 +45,7 @@ namespace TradingPlatform.Service.Accounts
                     return CreateAccountResult.Success;
                 }
             }
-            catch (Exception e)
+            catch
             {
                 return CreateAccountResult.Failure;
             }

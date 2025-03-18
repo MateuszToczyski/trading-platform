@@ -87,10 +87,13 @@
             this.dgvOpenPositions.AllowUserToDeleteRows = false;
             this.dgvOpenPositions.AllowUserToResizeColumns = false;
             this.dgvOpenPositions.AllowUserToResizeRows = false;
+            this.dgvOpenPositions.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             this.dgvOpenPositions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvOpenPositions.Location = new System.Drawing.Point(16, 358);
+            this.dgvOpenPositions.MultiSelect = false;
             this.dgvOpenPositions.Name = "dgvOpenPositions";
             this.dgvOpenPositions.ReadOnly = true;
+            this.dgvOpenPositions.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvOpenPositions.Size = new System.Drawing.Size(572, 150);
             this.dgvOpenPositions.TabIndex = 3;
             // 
