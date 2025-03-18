@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 using TradingPlatform.Factory;
 using TradingPlatform.Model;
 using TradingPlatform.Service.Accounts;
 using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Instruments;
+using TradingPlatform.Service.Orders;
 using TradingPlatform.Service.Prices;
 
 namespace TradingPlatform
@@ -41,14 +43,16 @@ namespace TradingPlatform
             DepositHandler depositHandler = factory.GetDepositHandler();
             WithdrawalHandler withdrawalHandler = factory.GetWithdrawalHandler();
             InstrumentProvider instrumentProvider = factory.GetInstrumentProvider();
-
-            MainForm mainForm = new MainForm(account, depositHandler, withdrawalHandler, instrumentProvider);
-
+            OrderHandler orderHandler = factory.GetOrderHandler();
             PricePublisher pricePublisher = factory.GetPricePublisher();
-            pricePublisher.AddObserver(mainForm);
-            pricePublisher.Start();
 
-            Application.Run(mainForm);
+            MainForm mainForm = new MainForm(account, depositHandler, withdrawalHandler, instrumentProvider, orderHandler);
+
+            Thread mainFormThread = new Thread(() => Application.Run(mainForm)) { IsBackground = false };
+
+            pricePublisher.Start();
+            mainForm.Initialize();
+            pricePublisher.AddObserver(mainForm);
         }
     }
 }

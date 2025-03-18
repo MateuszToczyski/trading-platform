@@ -84,6 +84,7 @@
     <Compile Include="Model\Demo\DemoAccount.cs" />
     <Compile Include="Model\Demo\DemoInstrument.cs" />
     <Compile Include="Model\DTO\AccountJson.cs" />
+    <Compile Include="Model\DTO\InstrumentJson.cs" />
     <Compile Include="Model\Instrument.cs" />
     <Compile Include="Repository\Demo\DemoInstrumentRepository.cs" />
     <Compile Include="Repository\Demo\DemoUpdateAccountRepository.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Service\Accounts\LoginValidator.cs" />
     <Compile Include="Service\Accounts\PasswordValidator.cs" />
     <Compile Include="Service\Instruments\InstrumentProvider.cs" />
+    <Compile Include="Service\Orders\OrderHandler.cs" />
     <Compile Include="Service\Prices\Demo\DemoPricePublisher.cs" />
     <Compile Include="Service\Prices\IPriceObserver.cs" />
     <Compile Include="Service\Prices\PricePublisher.cs" />

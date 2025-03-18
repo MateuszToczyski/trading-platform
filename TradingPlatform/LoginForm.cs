@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using TradingPlatform.Model;
 using TradingPlatform.Service.Accounts;
@@ -12,7 +11,6 @@ namespace TradingPlatform
 
         private readonly AccountCreator accountCreator;
         private readonly LoginHandler loginHandler;
-        private readonly CreateAccountMessageResolver createAccountMessageResolver = new CreateAccountMessageResolver();
 
         public LoginForm(AccountCreator accountCreator, LoginHandler loginHandler)
         {
@@ -32,8 +30,7 @@ namespace TradingPlatform
             string password = txtPassword.Text;
 
             CreateAccountResult result = accountCreator.CreateAccount(username, password);
-            string message = createAccountMessageResolver.GetMessage(result);
-            MessageBox.Show(message);
+            ShowCreateAccountResultMessage(result);
 
             if (result == CreateAccountResult.Success)
             {
@@ -56,22 +53,29 @@ namespace TradingPlatform
                 this.Close();
             }
         }
-    }
 
-    class CreateAccountMessageResolver
-    {
-        private readonly Dictionary<CreateAccountResult, string> createAccountResultMessages = new Dictionary<CreateAccountResult, string>
+        private void ShowCreateAccountResultMessage(CreateAccountResult result)
         {
-            { CreateAccountResult.Success, "Konto utworzone pomyślnie" },
-            { CreateAccountResult.Failure, "Nie udało się utworzyć konta; spróbuj ponownie" },
-            { CreateAccountResult.InvalidLogin, "Nazwa użytkownika nie może być pusta i może zawierać tylko litery i cyfry" },
-            { CreateAccountResult.InvalidPassword, "Hasło zbyt krótkie - minimalna liczba znaków: " + PasswordValidator.PASSWORD_MIN_LENGTH },
-            { CreateAccountResult.AlreadyExists, "Konto o podanej nazwie już istnieje" }
-        };
-
-        public string GetMessage(CreateAccountResult result)
-        {
-            return createAccountResultMessages[result];
+            switch (result)
+            {
+                case CreateAccountResult.Success:
+                    MessageBox.Show("Konto utworzone pomyślnie");
+                    break;
+                case CreateAccountResult.Failure:
+                    MessageBox.Show("Nie udało się utworzyć konta; spróbuj ponownie");
+                    break;
+                case CreateAccountResult.InvalidLogin:
+                    MessageBox.Show("Nazwa użytkownika nie może być pusta i może zawierać tylko litery i cyfry");
+                    break;
+                case CreateAccountResult.InvalidPassword:
+                    MessageBox.Show("Hasło zbyt krótkie - minimalna liczba znaków: " + PasswordValidator.PASSWORD_MIN_LENGTH);
+                    break;
+                case CreateAccountResult.AlreadyExists:
+                    MessageBox.Show("Konto o podanej nazwie już istnieje");
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

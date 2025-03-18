@@ -19,8 +19,8 @@ namespace TradingPlatform.Service.Prices.Demo
 
         public override void Start()
         {
-            Thread workerThread = new Thread(UpdateAndPublishPricesLoop) { IsBackground = true };
-            workerThread.Start();
+            Thread thread = new Thread(UpdateAndPublishPricesLoop) { IsBackground = true };
+            thread.Start();
         }
 
         private void UpdateAndPublishPricesLoop()

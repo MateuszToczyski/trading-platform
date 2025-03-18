@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using TradingPlatform.Model;
 using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Instruments;
+using TradingPlatform.Service.Orders;
 using TradingPlatform.Service.Prices;
 
 namespace TradingPlatform
@@ -17,61 +19,86 @@ namespace TradingPlatform
         private readonly DepositHandler depositHandler;
         private readonly WithdrawalHandler withdrawalHandler;
         private readonly InstrumentProvider instrumentProvider;
+        private readonly OrderHandler orderHandler;
 
-        private string currentInstrument = "";
+        private Instrument currentInstrument = null;
         private decimal currentPrice = 0;
+        private int currentOrderVolume = 0;
+        private Dictionary<string, Instrument> instruments = new Dictionary<string, Instrument>();
+
+        public bool SetUpComplete { get; private set; } = false;
 
         public MainForm(
             Account account,
             DepositHandler depositHandler,
             WithdrawalHandler withdrawalHandler,
-            InstrumentProvider instrumentProvider)
+            InstrumentProvider instrumentProvider,
+            OrderHandler orderHandler)
         {
             this.account = account;
             this.depositHandler = depositHandler;
             this.withdrawalHandler = withdrawalHandler;
             this.instrumentProvider = instrumentProvider;
+            this.orderHandler = orderHandler;
 
             InitializeComponent();
+            SetUpComplete = true;
+        }
+
+        public void Initialize()
+        {
             SetInitialValues();
-            RefreshComponent();
-
-            // TODO
-            dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
-            dgvOpenPositions.Columns.Add("Stan posiadania", "Stan posiadania");
-            dgvOpenPositions.Columns.Add("Cena otwarcia", "Cena otwarcia");
-            dgvOpenPositions.Columns.Add("Cena bieżąca", "Cena bieżąca");
-            dgvOpenPositions.Columns.Add("Wynik", "Wynik");
-
-            // TODO
-            dgvOpenPositions.Rows.Add("KGH", 1000, "BUY", 1.1, 1.2, 100);
-            dgvOpenPositions.Rows.Add("CDR", 1000, "SELL", 4.5, 4.4, -100);
+            RefreshDisplayedValues();
         }
 
         public void HandlePricesPublished(Dictionary<string, decimal> prices)
         {
-            if (prices.ContainsKey(currentInstrument) == false)
+            string currentInstrumentName = currentInstrument.Name;
+
+            if (prices.ContainsKey(currentInstrumentName) == false)
             {
                 return;
             }
 
-            currentPrice = prices[currentInstrument];
+            currentPrice = prices[currentInstrumentName];
 
-            RefreshCurrentPriceText();
-            RefreshOrderValue();
+            RefreshDisplayedValues();
             AddCurrentPriceToChart();
         }
 
         private void SetInitialValues()
         {
+            SetUpOpenPositionsTable();
             SetInitialDepositWithdrawalText();
             SetInitialInstrumentList();
             SetUpPriceChart();
         }
 
-        private void RefreshComponent()
+        private void RefreshDisplayedValues()
         {
             RefreshAvailableFunds();
+            RefreshOpenPositions();
+            RefreshCurrentPriceText();
+            RefreshOrderValue();
+        }
+
+        private void SetUpOpenPositionsTable()
+        {
+            dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
+            dgvOpenPositions.Columns.Add("Stan posiadania", "Stan posiadania");
+            dgvOpenPositions.Columns.Add("Wartość bieżąca", "Wartość bieżąca");
+        }
+
+        private void RefreshOpenPositions()
+        {
+            dgvOpenPositions.Rows.Clear();
+            
+            foreach (KeyValuePair<Instrument, int> entry in account.OpenPositions.ToList())
+            {
+                Instrument instrument = entry.Key;
+                int volume = entry.Value;
+                dgvOpenPositions.Rows.Add(instrument.GetFullName(), volume, volume * currentPrice);
+            }
         }
 
         private void SetInitialDepositWithdrawalText()
@@ -81,15 +108,18 @@ namespace TradingPlatform
 
         private void SetInitialInstrumentList()
         {
+            List<Instrument> instruments = instrumentProvider.GetAllInstruments();
+            this.instruments = instruments.ToDictionary(instrument => instrument.Name);
+
             lstInstruments.Items.Clear();
 
-            foreach (Instrument instrument in instrumentProvider.GetAllInstruments())
+            foreach (Instrument instrument in instruments)
             {
                 lstInstruments.Items.Add(instrument.Name);
             }
 
             lstInstruments.SelectedIndex = 0;
-            currentInstrument = lstInstruments.SelectedItem.ToString();
+            currentInstrument = this.instruments[lstInstruments.SelectedItem.ToString()];
         }
 
         private void SetUpPriceChart()
@@ -123,18 +153,18 @@ namespace TradingPlatform
 
         private void RefreshOrderValue()
         {
-            decimal orderAmount = 0;
+            currentOrderVolume = 0;
             
             try
             {
-                orderAmount = int.Parse(txtOrderAmount.Text);
+                currentOrderVolume = int.Parse(txtOrderAmount.Text);
             }
             catch
             {
-                // ignorowanie błędu
+                // ignore
             }
 
-            decimal orderValue = orderAmount * currentPrice;
+            decimal orderValue = currentOrderVolume * currentPrice;
 
             txtOrderValue.Invoke((MethodInvoker)delegate
             {
@@ -152,7 +182,7 @@ namespace TradingPlatform
                 MessageBox.Show("Wprowadź poprawną dodatnią kwotę (maks. 2 miejsca dziesiętne po kropce)");
             }
 
-            RefreshComponent();
+            RefreshDisplayedValues();
         }
 
         private void btnWithdrawal_Click(object sender, EventArgs e)
@@ -169,12 +199,12 @@ namespace TradingPlatform
                 MessageBox.Show("Brak wystarczających środków na koncie");
             }
 
-            RefreshComponent();
+            RefreshDisplayedValues();
         }
 
         private void lstInstruments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            currentInstrument = lstInstruments.SelectedItem.ToString();
+            currentInstrument = instruments[lstInstruments.SelectedItem.ToString()];
 
             if (crtPrices.Series.Count > 0)
             {
@@ -184,7 +214,63 @@ namespace TradingPlatform
 
         private void txtOrderAmount_TextChanged(object sender, EventArgs e)
         {
-            RefreshOrderValue();
+            RefreshDisplayedValues();
+        }
+
+        private void btnBuy_Click(object sender, EventArgs e)
+        {
+            BuyOrderResult result = orderHandler.PlaceBuyOrder(account, currentInstrument, currentOrderVolume, currentPrice);
+            RefreshDisplayedValues();
+            ShowBuyOrderResultMessage(result);
+        }
+
+        private void btnSell_Click(object sender, EventArgs e)
+        {
+            SellOrderResult result = orderHandler.PlaceSellOrder(account, currentInstrument, currentOrderVolume, currentPrice);
+            RefreshDisplayedValues();
+            ShowSellOrderResultMessage(result);
+        }
+
+        private void ShowBuyOrderResultMessage(BuyOrderResult result)
+        {
+            switch (result)
+            {
+                case BuyOrderResult.InvalidVolume:
+                    MessageBox.Show("Liczba sztuk musi być dodatnią liczbą całkowitą");
+                    break;
+                case BuyOrderResult.InvalidPrice:
+                    MessageBox.Show("Wprowadź poprawną dodatnią cenę instrumentu (maks. 2 miejsca dziesiętne po kropce)");
+                    break;
+                case BuyOrderResult.InsufficientFunds:
+                    MessageBox.Show("Brak wystarczających środków na koncie");
+                    break;
+                case BuyOrderResult.Success:
+                    MessageBox.Show("Zlecenie kupna zrealizowane pomyślnie");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ShowSellOrderResultMessage(SellOrderResult result)
+        {
+            switch (result)
+            {
+                case SellOrderResult.InvalidVolume:
+                    MessageBox.Show("Liczba sztuk musi być dodatnią liczbą całkowitą");
+                    break;
+                case SellOrderResult.InvalidPrice:
+                    MessageBox.Show("Wprowadź poprawną dodatnią cenę instrumentu (maks. 2 miejsca dziesiętne po kropce)");
+                    break;
+                case SellOrderResult.InsufficientPosition:
+                    MessageBox.Show("Brak wystarczającej liczby sztuk instrumentu w posiadaniu");
+                    break;
+                case SellOrderResult.Success:
+                    MessageBox.Show("Zlecenie sprzedaży zrealizowane pomyślnie");
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

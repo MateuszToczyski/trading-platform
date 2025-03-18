@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.lstInstruments = new System.Windows.Forms.ListBox();
             this.crtPrices = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lblOpenPositions = new System.Windows.Forms.Label();
@@ -62,10 +62,10 @@
             // 
             // crtPrices
             // 
-            chartArea3.AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
-            chartArea3.AxisX.MajorGrid.Enabled = false;
-            chartArea3.Name = "ChartArea1";
-            this.crtPrices.ChartAreas.Add(chartArea3);
+            chartArea1.AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            chartArea1.AxisX.MajorGrid.Enabled = false;
+            chartArea1.Name = "ChartArea1";
+            this.crtPrices.ChartAreas.Add(chartArea1);
             this.crtPrices.Location = new System.Drawing.Point(13, 13);
             this.crtPrices.Name = "crtPrices";
             this.crtPrices.Size = new System.Drawing.Size(575, 300);
@@ -119,6 +119,7 @@
             this.btnBuy.TabIndex = 6;
             this.btnBuy.Text = "KUP";
             this.btnBuy.UseVisualStyleBackColor = true;
+            this.btnBuy.Click += new System.EventHandler(this.btnBuy_Click);
             // 
             // btnSell
             // 
@@ -128,6 +129,7 @@
             this.btnSell.TabIndex = 7;
             this.btnSell.Text = "SPRZEDAJ";
             this.btnSell.UseVisualStyleBackColor = true;
+            this.btnSell.Click += new System.EventHandler(this.btnSell_Click);
             // 
             // lblAvailableFunds
             // 

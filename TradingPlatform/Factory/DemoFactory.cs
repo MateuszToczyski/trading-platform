@@ -4,6 +4,7 @@ using TradingPlatform.Service.Accounts;
 using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Demo;
 using TradingPlatform.Service.Instruments;
+using TradingPlatform.Service.Orders;
 using TradingPlatform.Service.Prices;
 using TradingPlatform.Service.Prices.Demo;
 
@@ -58,6 +59,11 @@ namespace TradingPlatform.Factory
         public PricePublisher GetPricePublisher()
         {
             return new DemoPricePublisher();
+        }
+
+        public OrderHandler GetOrderHandler()
+        {
+            return new OrderHandler(accountUpdater);
         }
     }
 }
