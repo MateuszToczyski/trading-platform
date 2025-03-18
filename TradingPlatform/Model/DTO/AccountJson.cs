@@ -18,7 +18,7 @@ namespace TradingPlatform.Model.DTO
         public decimal CashBalance { get; }
 
         [JsonInclude]
-        public List<OpenPosition> OpenPositions
+        public List<OpenPositionJson> OpenPositions
         {
             get
             {
@@ -27,10 +27,10 @@ namespace TradingPlatform.Model.DTO
         }
 
         [JsonIgnore]
-        private readonly List<OpenPosition> openPositions;
+        private readonly List<OpenPositionJson> openPositions;
 
         [JsonConstructor]
-        public AccountJson(string login, string hashedPassword, decimal cashBalance, List<OpenPosition> openPositions)
+        public AccountJson(string login, string hashedPassword, decimal cashBalance, List<OpenPositionJson> openPositions)
         {
             Login = login;
             HashedPassword = hashedPassword;
@@ -43,7 +43,7 @@ namespace TradingPlatform.Model.DTO
             Login = account.Login;
             HashedPassword = account.HashedPassword;
             CashBalance = account.CashBalance;
-            openPositions = account.OpenPositions;
+            openPositions = account.OpenPositions.ConvertAll(op => new OpenPositionJson(op));
         }
 
         public string ToJsonString()

@@ -84,8 +84,10 @@
     <Compile Include="Json\JsonOptions.cs" />
     <Compile Include="Model\Demo\DemoAccount.cs" />
     <Compile Include="Model\Demo\DemoInstrument.cs" />
+    <Compile Include="Model\Demo\DemoOpenPosition.cs" />
     <Compile Include="Model\DTO\AccountJson.cs" />
     <Compile Include="Model\DTO\InstrumentJson.cs" />
+    <Compile Include="Model\DTO\OpenPositionJson.cs" />
     <Compile Include="Model\Instrument.cs" />
     <Compile Include="Model\OpenPosition.cs" />
     <Compile Include="Repository\Demo\DemoInstrumentRepository.cs" />

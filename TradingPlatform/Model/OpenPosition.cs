@@ -1,6 +1,6 @@
 ﻿namespace TradingPlatform.Model
 {
-    public class OpenPosition
+    abstract public class OpenPosition
     {
         public Instrument Instrument { get; }
         

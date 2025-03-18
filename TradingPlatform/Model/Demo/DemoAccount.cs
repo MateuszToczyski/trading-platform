@@ -10,8 +10,12 @@ namespace TradingPlatform.Model.Demo
         public DemoAccount(string login, string hashedPassword) :
             base(login, hashedPassword, 0, new List<OpenPosition>()) { }
 
-        public DemoAccount(AccountJson json) :
-            base(json.Login, json.HashedPassword, json.CashBalance, json.OpenPositions) { }
+        public DemoAccount(AccountJson json) : base(
+            json.Login,
+            json.HashedPassword,
+            json.CashBalance,
+            json.OpenPositions.ConvertAll(op => (OpenPosition) new DemoOpenPosition(op))
+        ) { }
 
         // Wersja demonstracyjna - brak obsugi dostawców płatności, kont bankowych itp.
         override public DepositResult Deposit(decimal amount)
@@ -102,7 +106,7 @@ namespace TradingPlatform.Model.Demo
             }
             else
             {
-                openPositions.Add(new OpenPosition(instrument, volume));
+                openPositions.Add(new DemoOpenPosition(instrument, volume));
             }
         }
 
