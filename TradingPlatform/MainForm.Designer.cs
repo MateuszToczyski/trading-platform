@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.lstInstruments = new System.Windows.Forms.ListBox();
             this.crtPrices = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lblOpenPositions = new System.Windows.Forms.Label();
             this.dgvOpenPositions = new System.Windows.Forms.DataGridView();
             this.lblNominal = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtOrderAmount = new System.Windows.Forms.TextBox();
             this.btnBuy = new System.Windows.Forms.Button();
             this.btnSell = new System.Windows.Forms.Button();
             this.lblAvailableFunds = new System.Windows.Forms.Label();
@@ -44,7 +44,7 @@
             this.lblPrice = new System.Windows.Forms.Label();
             this.txtCurrentPrice = new System.Windows.Forms.TextBox();
             this.lblOrderValue = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtOrderValue = new System.Windows.Forms.TextBox();
             this.txtDepositWithdrawal = new System.Windows.Forms.TextBox();
             this.lblDepositWithdrawal = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.crtPrices)).BeginInit();
@@ -58,11 +58,14 @@
             this.lstInstruments.Name = "lstInstruments";
             this.lstInstruments.Size = new System.Drawing.Size(250, 108);
             this.lstInstruments.TabIndex = 0;
+            this.lstInstruments.SelectedIndexChanged += new System.EventHandler(this.lstInstruments_SelectedIndexChanged);
             // 
             // crtPrices
             // 
-            chartArea2.Name = "ChartArea1";
-            this.crtPrices.ChartAreas.Add(chartArea2);
+            chartArea3.AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            chartArea3.AxisX.MajorGrid.Enabled = false;
+            chartArea3.Name = "ChartArea1";
+            this.crtPrices.ChartAreas.Add(chartArea3);
             this.crtPrices.Location = new System.Drawing.Point(13, 13);
             this.crtPrices.Name = "crtPrices";
             this.crtPrices.Size = new System.Drawing.Size(575, 300);
@@ -100,12 +103,13 @@
             this.lblNominal.TabIndex = 4;
             this.lblNominal.Text = "Liczba sztuk";
             // 
-            // textBox1
+            // txtOrderAmount
             // 
-            this.textBox1.Location = new System.Drawing.Point(597, 156);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 5;
+            this.txtOrderAmount.Location = new System.Drawing.Point(597, 156);
+            this.txtOrderAmount.Name = "txtOrderAmount";
+            this.txtOrderAmount.Size = new System.Drawing.Size(100, 20);
+            this.txtOrderAmount.TabIndex = 5;
+            this.txtOrderAmount.TextChanged += new System.EventHandler(this.txtOrderAmount_TextChanged);
             // 
             // btnBuy
             // 
@@ -188,13 +192,13 @@
             this.lblOrderValue.TabIndex = 14;
             this.lblOrderValue.Text = "Wartość zlecenia";
             // 
-            // textBox2
+            // txtOrderValue
             // 
-            this.textBox2.Location = new System.Drawing.Point(597, 206);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 15;
+            this.txtOrderValue.Location = new System.Drawing.Point(597, 206);
+            this.txtOrderValue.Name = "txtOrderValue";
+            this.txtOrderValue.ReadOnly = true;
+            this.txtOrderValue.Size = new System.Drawing.Size(100, 20);
+            this.txtOrderValue.TabIndex = 15;
             // 
             // txtDepositWithdrawal
             // 
@@ -219,7 +223,7 @@
             this.ClientSize = new System.Drawing.Size(856, 517);
             this.Controls.Add(this.lblDepositWithdrawal);
             this.Controls.Add(this.txtDepositWithdrawal);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.txtOrderValue);
             this.Controls.Add(this.lblOrderValue);
             this.Controls.Add(this.txtCurrentPrice);
             this.Controls.Add(this.lblPrice);
@@ -229,7 +233,7 @@
             this.Controls.Add(this.lblAvailableFunds);
             this.Controls.Add(this.btnSell);
             this.Controls.Add(this.btnBuy);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtOrderAmount);
             this.Controls.Add(this.lblNominal);
             this.Controls.Add(this.dgvOpenPositions);
             this.Controls.Add(this.lblOpenPositions);
@@ -251,7 +255,7 @@
         private System.Windows.Forms.Label lblOpenPositions;
         private System.Windows.Forms.DataGridView dgvOpenPositions;
         private System.Windows.Forms.Label lblNominal;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtOrderAmount;
         private System.Windows.Forms.Button btnBuy;
         private System.Windows.Forms.Button btnSell;
         private System.Windows.Forms.Label lblAvailableFunds;
@@ -261,7 +265,7 @@
         private System.Windows.Forms.Label lblPrice;
         private System.Windows.Forms.TextBox txtCurrentPrice;
         private System.Windows.Forms.Label lblOrderValue;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtOrderValue;
         private System.Windows.Forms.TextBox txtDepositWithdrawal;
         private System.Windows.Forms.Label lblDepositWithdrawal;
     }

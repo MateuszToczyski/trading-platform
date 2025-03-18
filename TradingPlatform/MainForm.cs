@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using TradingPlatform.Model;
@@ -17,7 +18,8 @@ namespace TradingPlatform
         private readonly WithdrawalHandler withdrawalHandler;
         private readonly InstrumentProvider instrumentProvider;
 
-        private string currentInstrument;
+        private string currentInstrument = "";
+        private decimal currentPrice = 0;
 
         public MainForm(
             Account account,
@@ -44,23 +46,20 @@ namespace TradingPlatform
             // TODO
             dgvOpenPositions.Rows.Add("KGH", 1000, "BUY", 1.1, 1.2, 100);
             dgvOpenPositions.Rows.Add("CDR", 1000, "SELL", 4.5, 4.4, -100);
-            this.withdrawalHandler = withdrawalHandler;
         }
 
         public void HandlePricesPublished(Dictionary<string, decimal> prices)
         {
-            decimal currentInstrumentPrice = prices[currentInstrument];
-
-            if (currentInstrumentPrice != 0)
+            if (prices.ContainsKey(currentInstrument) == false)
             {
-                // Ceny publikowane są w osobnym wątku - komponenty interfejsu graficznego muszą być modyfikowane w dedykowanym wątku
-                crtPrices.Invoke((MethodInvoker)delegate
-                {
-                    crtPrices.Series[CHART_SERIES_NAME].Points.AddY(currentInstrumentPrice);
-                    crtPrices.ChartAreas[0].AxisY.Minimum = ((double)currentInstrumentPrice) * 0.95;
-                    crtPrices.ChartAreas[0].AxisY.Maximum = ((double)currentInstrumentPrice) * 1.05;
-                });
+                return;
             }
+
+            currentPrice = prices[currentInstrument];
+
+            RefreshCurrentPriceText();
+            RefreshOrderValue();
+            AddCurrentPriceToChart();
         }
 
         private void SetInitialValues()
@@ -99,12 +98,51 @@ namespace TradingPlatform
             crtPrices.Series[CHART_SERIES_NAME].ChartType = SeriesChartType.Line;
         }
 
+        private void AddCurrentPriceToChart()
+        {
+            crtPrices.Invoke((MethodInvoker)delegate
+            {
+                crtPrices.Series[CHART_SERIES_NAME].Points.AddY(currentPrice);
+                crtPrices.ChartAreas[0].AxisY.Minimum = Math.Round(((double)currentPrice) * 0.95, 0);
+                crtPrices.ChartAreas[0].AxisY.Maximum = Math.Round(((double)currentPrice) * 1.05, 0);
+            });
+        }
+
+        private void RefreshCurrentPriceText()
+        {
+            txtCurrentPrice.Invoke((MethodInvoker)delegate
+            {
+                txtCurrentPrice.Text = currentPrice.ToString();
+            });
+        }
+
         private void RefreshAvailableFunds()
         {
             txtAvailableFunds.Text = account.CashBalance.ToString();
         }
 
-        private void btnDeposit_Click(object sender, System.EventArgs e)
+        private void RefreshOrderValue()
+        {
+            decimal orderAmount = 0;
+            
+            try
+            {
+                orderAmount = int.Parse(txtOrderAmount.Text);
+            }
+            catch
+            {
+                // ignorowanie błędu
+            }
+
+            decimal orderValue = orderAmount * currentPrice;
+
+            txtOrderValue.Invoke((MethodInvoker)delegate
+            {
+                txtOrderValue.Text = orderValue.ToString();
+            });
+        }
+
+        private void btnDeposit_Click(object sender, EventArgs e)
         {
             string amount = txtDepositWithdrawal.Text;
             DepositResult result = depositHandler.Deposit(account, amount);
@@ -117,7 +155,7 @@ namespace TradingPlatform
             RefreshComponent();
         }
 
-        private void btnWithdrawal_Click(object sender, System.EventArgs e)
+        private void btnWithdrawal_Click(object sender, EventArgs e)
         {
             string amount = txtDepositWithdrawal.Text;
             WithdrawalResult result = withdrawalHandler.Withdraw(account, amount);
@@ -132,6 +170,21 @@ namespace TradingPlatform
             }
 
             RefreshComponent();
+        }
+
+        private void lstInstruments_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            currentInstrument = lstInstruments.SelectedItem.ToString();
+
+            if (crtPrices.Series.Count > 0)
+            {
+                crtPrices.Series[CHART_SERIES_NAME].Points.Clear();
+            }
+        }
+
+        private void txtOrderAmount_TextChanged(object sender, EventArgs e)
+        {
+            RefreshOrderValue();
         }
     }
 }

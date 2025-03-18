@@ -12,7 +12,7 @@ namespace TradingPlatform.Repository.Demo
             {
                 new DemoInstrument("KGHM", InstrumentType.Akcje),
                 new DemoInstrument("PKN Orlen", InstrumentType.Akcje),
-                new DemoInstrument("PZU 0727", InstrumentType.Obligacje),
+                new DemoInstrument("PZU", InstrumentType.Obligacje),
             };
         }
     }

@@ -8,11 +8,13 @@ namespace TradingPlatform.Service.Prices.Demo
     // Wersja demonstracyjna - publikuje losowy ciąg cen, zaczynając od arbitralnie wybranych cen początkowych
     class DemoPricePublisher : PricePublisher
     {
+        private readonly Random random = new Random();
+
         private readonly Dictionary<string, decimal> prices = new Dictionary<string, decimal>
         {
             { "KGHM", 150 },
-            //{ "PKN Orlen", 70 },
-            //{ "PZU 0727", 100 }
+            { "PKN Orlen", 70 },
+            { "PZU", 100 }
         };
 
         public override void Start()
@@ -41,9 +43,9 @@ namespace TradingPlatform.Service.Prices.Demo
 
         private decimal GetNewPrice(decimal currentPrice)
         {
-            double randomValue = new Random().NextDouble() - 0.5;
-            double changeFactor = 1 + 0.01 * randomValue;
-            return currentPrice * (decimal) changeFactor;
+            double randomMultiplier = 1 + 0.01 * (random.NextDouble() - 0.5);
+            decimal newPrice = currentPrice * (decimal)randomMultiplier;
+            return Math.Round(newPrice, 2);
         }
     }
 }
