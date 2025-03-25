@@ -4,30 +4,29 @@ using TradingPlatform.Model;
 
 namespace TradingPlatform.UI
 {
-    public class OpenPositionsTable : UIComponent
+    public class OpenPositionsTable : UIComponent<DataGridView>
     {
-        private readonly DataGridView dataGridView;
-
         public OpenPositionsTable(DataGridView dataGridView) : base(dataGridView)
         {
-            this.dataGridView = dataGridView;
-
             Initialize();
         }
 
-        public void Refresh(List<OpenPosition> openPositions, decimal currentPrice)
+        public void Refresh(List<OpenPosition> openPositions, Dictionary<string, decimal> prices)
         {
             SafeInvoke(() =>
             {
-                dataGridView.Rows.Clear();
+                control.Rows.Clear();
 
                 foreach (OpenPosition position in openPositions)
                 {
-                    AddRow(currentPrice, position);
+                    if (prices.TryGetValue(position.Instrument.Name, out decimal currentPrice))
+                    {
+                        AddRow(currentPrice, position);
+                    }
                 }
 
-                dataGridView.AutoResizeColumns();
-                dataGridView.AutoResizeRows();
+                control.AutoResizeColumns();
+                control.AutoResizeRows();
             });
         }
 
@@ -35,10 +34,10 @@ namespace TradingPlatform.UI
         {
             SafeInvoke(() =>
             {
-                dataGridView.Columns.Clear();
-                dataGridView.Columns.Add("Nazwa", "Nazwa");
-                dataGridView.Columns.Add("Stan posiadania", "Stan posiadania");
-                dataGridView.Columns.Add("Wartość bieżąca", "Wartość bieżąca");
+                control.Columns.Clear();
+                control.Columns.Add("Nazwa", "Nazwa");
+                control.Columns.Add("Stan posiadania", "Stan posiadania");
+                control.Columns.Add("Wartość bieżąca", "Wartość bieżąca");
             });
         }
 
@@ -46,7 +45,7 @@ namespace TradingPlatform.UI
         {
             Instrument instrument = position.Instrument;
             int volume = position.Volume;
-            dataGridView.Rows.Add(instrument.GetFullName(), volume, volume * currentPrice);
+            control.Rows.Add(instrument.GetFullName(), volume, volume * currentPrice);
         }
     }
 }

@@ -3,11 +3,11 @@ using System.Windows.Forms;
 
 namespace TradingPlatform.UI
 {
-    public abstract class UIComponent
+    public abstract class UIComponent<TControl> where TControl : Control
     {
-        private readonly Control control;
+        protected readonly TControl control;
 
-        public UIComponent(Control control)
+        public UIComponent(TControl control)
         {
             this.control = control;
         }

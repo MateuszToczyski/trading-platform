@@ -131,7 +131,9 @@
     <Compile Include="Service\Prices\Demo\DemoPricePublisher.cs" />
     <Compile Include="Service\Prices\IPriceObserver.cs" />
     <Compile Include="Service\Prices\PricePublisher.cs" />
+    <Compile Include="UI\InstrumentListBox.cs" />
     <Compile Include="UI\OpenPositionsTable.cs" />
+    <Compile Include="UI\PriceChart.cs" />
     <Compile Include="UI\TextBoxComponent.cs" />
     <Compile Include="UI\UIComponent.cs" />
     <EmbeddedResource Include="LoginForm.resx">

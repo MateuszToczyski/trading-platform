@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using TradingPlatform.Model;
 using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Instruments;
@@ -15,14 +14,18 @@ namespace TradingPlatform
 {
     public partial class MainForm : Form, IPriceObserver
     {
-        private readonly static string CHART_SERIES_NAME = "Kurs";
-
         // Zalogowany użytkownik
         private readonly Account account;
 
         // Obiekty warstwy prezentacji
         private OpenPositionsTable openPositionsTable;
-        private TextBoxComponent depositWithdrawalAmountBox;
+        private InstrumentListBox instrumentListBox;
+        private PriceChart priceChart;
+
+        private TextBoxComponent depositWithdrawalTextBox;
+        private TextBoxComponent currentPriceTextBox;
+        private TextBoxComponent availableFundsTextBox;
+        private TextBoxComponent orderValueTextBox;
 
         // Obiekty warstwy serwisowej
         private readonly DepositHandler depositHandler;
@@ -35,6 +38,7 @@ namespace TradingPlatform
         private decimal currentPrice = 0;
         private int currentOrderVolume = 0;
         private Dictionary<string, Instrument> instruments = new Dictionary<string, Instrument>();
+        private Dictionary<string, decimal> prices = new Dictionary<string, decimal>();
 
         public MainForm(
             Account account,
@@ -55,16 +59,15 @@ namespace TradingPlatform
         public void Initialize()
         {
             // Zanim wszystkie kontrolki zostaną zainicjalizowane (dzieje się to w osobnym wątku),
-            // mogą wystąpić błędy, dlatego może być potrzebne kilka prób ustawienia początkowych wartości
+            // mogą wystąpić błędy - ponawiamy próbę ustawienia początkowych wartości co 100 milisekund
             while (true)
             {
                 try
                 {
-                    openPositionsTable = new OpenPositionsTable(dgvOpenPositions);
-                    depositWithdrawalAmountBox = new TextBoxComponent(txtDepositWithdrawal);
-
+                    CreateComponents();
                     SetInitialValues();
                     RefreshDisplayedValues();
+                    
                     return;
                 }
                 catch
@@ -76,24 +79,32 @@ namespace TradingPlatform
 
         public void HandlePricesPublished(Dictionary<string, decimal> prices)
         {
+            this.prices = prices;
             string currentInstrumentName = currentInstrument.Name;
 
-            if (prices.ContainsKey(currentInstrumentName) == false)
+            if (prices.TryGetValue(currentInstrumentName, out decimal newPrice))
             {
-                return;
+                currentPrice = newPrice;
             }
 
-            currentPrice = prices[currentInstrumentName];
-
             RefreshDisplayedValues();
-            AddCurrentPriceToChart();
+            priceChart.AddPrice(currentPrice);
+        }
+
+        private void CreateComponents()
+        {
+            openPositionsTable = new OpenPositionsTable(dgvOpenPositions);
+            priceChart = new PriceChart(crtPrices);
+            depositWithdrawalTextBox = new TextBoxComponent(txtDepositWithdrawal);
+            currentPriceTextBox = new TextBoxComponent(txtCurrentPrice);
+            availableFundsTextBox = new TextBoxComponent(txtAvailableFunds);
+            orderValueTextBox = new TextBoxComponent(txtOrderValue);
         }
 
         private void SetInitialValues()
         {
             SetInitialDepositWithdrawalText();
             SetInitialInstrumentList();
-            SetUpPriceChart();
         }
 
         private void RefreshDisplayedValues()
@@ -106,67 +117,30 @@ namespace TradingPlatform
 
         private void RefreshOpenPositions()
         {
-            openPositionsTable.Refresh(account.OpenPositions, currentPrice);
+            openPositionsTable.Refresh(account.OpenPositions, prices);
         }
 
         private void SetInitialDepositWithdrawalText()
         {
-            depositWithdrawalAmountBox.Text = "0.00";
+            depositWithdrawalTextBox.Text = "0.00";
         }
 
         private void SetInitialInstrumentList()
         {
-            List<Instrument> instruments = instrumentProvider.GetAllInstruments();
-            this.instruments = instruments.ToDictionary(instrument => instrument.Name);
-
-            lstInstruments.Invoke((MethodInvoker)delegate
-            {
-                lstInstruments.Items.Clear();
-
-                foreach (Instrument instrument in instruments)
-                {
-                    lstInstruments.Items.Add(instrument.Name);
-                }
-
-                lstInstruments.SelectedIndex = 0;
-                currentInstrument = this.instruments[lstInstruments.SelectedItem.ToString()];
-            });
-        }
-
-        private void SetUpPriceChart()
-        {
-            crtPrices.Invoke((MethodInvoker)delegate
-            {
-                crtPrices.Series.Clear();
-                crtPrices.Series.Add(CHART_SERIES_NAME);
-                crtPrices.Series[CHART_SERIES_NAME].ChartType = SeriesChartType.Line;
-            });
-        }
-
-        private void AddCurrentPriceToChart()
-        {
-            crtPrices.Invoke((MethodInvoker)delegate
-            {
-                crtPrices.Series[CHART_SERIES_NAME].Points.AddY(currentPrice);
-                crtPrices.ChartAreas[0].AxisY.Minimum = Math.Round(((double)currentPrice) * 0.95, 0);
-                crtPrices.ChartAreas[0].AxisY.Maximum = Math.Round(((double)currentPrice) * 1.05, 0);
-            });
+            List<Instrument> instrumentList = instrumentProvider.GetAllInstruments();
+            instruments = instrumentList.ToDictionary(instrument => instrument.Name);
+            currentInstrument = instrumentList.First();
+            instrumentListBox = new InstrumentListBox(lstInstruments, instrumentList);
         }
 
         private void RefreshCurrentPriceText()
         {
-            txtCurrentPrice.Invoke((MethodInvoker)delegate
-            {
-                txtCurrentPrice.Text = currentPrice.ToString();
-            });
+            currentPriceTextBox.Text = currentPrice.ToString();
         }
 
         private void RefreshAvailableFunds()
         {
-            txtAvailableFunds.Invoke((MethodInvoker)delegate
-            {
-                txtAvailableFunds.Text = account.CashBalance.ToString();
-            });
+            availableFundsTextBox.Text = account.CashBalance.ToString();
         }
 
         private void RefreshOrderValue()
@@ -179,15 +153,12 @@ namespace TradingPlatform
             }
             catch
             {
-                // ignorowanie błędów parsowania - pozostanie ustawiona domyślna wartość: 0
+                // ignorowanie błędu parsowania - domyślna wartość (0) pozostaje aktywna
             }
 
             decimal orderValue = currentOrderVolume * currentPrice;
 
-            txtOrderValue.Invoke((MethodInvoker)delegate
-            {
-                txtOrderValue.Text = orderValue.ToString();
-            });
+            orderValueTextBox.Text = orderValue.ToString();
         }
 
         private void btnDeposit_Click(object sender, EventArgs e)
@@ -222,15 +193,9 @@ namespace TradingPlatform
 
         private void lstInstruments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            currentInstrument = instruments[lstInstruments.SelectedItem.ToString()];
+            currentInstrument = instruments[instrumentListBox.SelectedItem];
 
-            if (crtPrices.Series.Count > 0)
-            {
-                crtPrices.Invoke((MethodInvoker)delegate
-                {
-                    crtPrices.Series[CHART_SERIES_NAME].Points.Clear();
-                }); 
-            }
+            priceChart.Clear();
         }
 
         private void txtOrderAmount_TextChanged(object sender, EventArgs e)

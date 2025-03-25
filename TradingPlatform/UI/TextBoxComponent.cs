@@ -2,25 +2,20 @@
 
 namespace TradingPlatform.UI
 {
-    class TextBoxComponent : UIComponent
+    class TextBoxComponent : UIComponent<TextBox>
     {
-        private readonly TextBox textBox;
-
         public string Text
         {
             get
             {
-                return SafeInvoke(() => textBox.Text);
+                return SafeInvoke(() => control.Text);
             }
             set
             {
-                SafeInvoke(() => textBox.Text = value);
+                SafeInvoke(() => control.Text = value);
             }
         }
 
-        public TextBoxComponent(TextBox textBox) : base(textBox)
-        {
-            this.textBox = textBox;
-        }
+        public TextBoxComponent(TextBox textBox) : base(textBox) { }
     }
 }
