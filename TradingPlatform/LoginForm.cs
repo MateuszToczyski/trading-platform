@@ -16,6 +16,7 @@ namespace TradingPlatform
         {
             this.accountCreator = accountCreator;
             this.loginHandler = loginHandler;
+            
             InitializeComponent();
         }
 
@@ -29,11 +30,14 @@ namespace TradingPlatform
             string username = txtUsername.Text;
             string password = txtPassword.Text;
 
-            CreateAccountResult result = accountCreator.CreateAccount(username, password);
-            ShowCreateAccountResultMessage(result);
+            CreateAccountResult accountCreationResult = accountCreator.CreateAccount(username, password);
+            
+            ShowCreateAccountResultMessage(accountCreationResult);
 
-            if (result == CreateAccountResult.Success)
+            if (accountCreationResult == CreateAccountResult.Success)
             {
+                // Po udanym utworzeniu konta następuje automatyczne logowanie,
+                // aby nie wymagać od użytkownika ponownego wpisywania danych
                 TryLogIn(username, password);
             }
         }
@@ -48,7 +52,7 @@ namespace TradingPlatform
             }
             else
             {
-                Account = account;
+                this.Account = account;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

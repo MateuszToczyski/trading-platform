@@ -9,6 +9,7 @@ using TradingPlatform.Service.CashOperations;
 using TradingPlatform.Service.Instruments;
 using TradingPlatform.Service.Orders;
 using TradingPlatform.Service.Prices;
+using TradingPlatform.UI;
 
 namespace TradingPlatform
 {
@@ -16,12 +17,20 @@ namespace TradingPlatform
     {
         private readonly static string CHART_SERIES_NAME = "Kurs";
 
+        // Zalogowany użytkownik
         private readonly Account account;
+
+        // Obiekty warstwy prezentacji
+        private OpenPositionsTable openPositionsTable;
+        private TextBoxComponent depositWithdrawalAmountBox;
+
+        // Obiekty warstwy serwisowej
         private readonly DepositHandler depositHandler;
         private readonly WithdrawalHandler withdrawalHandler;
         private readonly InstrumentProvider instrumentProvider;
         private readonly OrderHandler orderHandler;
 
+        // Pola przechowujące bieżące dane rynkowe i wybory użytkownika
         private Instrument currentInstrument = null;
         private decimal currentPrice = 0;
         private int currentOrderVolume = 0;
@@ -45,10 +54,15 @@ namespace TradingPlatform
 
         public void Initialize()
         {
+            // Zanim wszystkie kontrolki zostaną zainicjalizowane (dzieje się to w osobnym wątku),
+            // mogą wystąpić błędy, dlatego może być potrzebne kilka prób ustawienia początkowych wartości
             while (true)
             {
                 try
                 {
+                    openPositionsTable = new OpenPositionsTable(dgvOpenPositions);
+                    depositWithdrawalAmountBox = new TextBoxComponent(txtDepositWithdrawal);
+
                     SetInitialValues();
                     RefreshDisplayedValues();
                     return;
@@ -77,7 +91,6 @@ namespace TradingPlatform
 
         private void SetInitialValues()
         {
-            SetUpOpenPositionsTable();
             SetInitialDepositWithdrawalText();
             SetInitialInstrumentList();
             SetUpPriceChart();
@@ -91,41 +104,14 @@ namespace TradingPlatform
             RefreshOrderValue();
         }
 
-        private void SetUpOpenPositionsTable()
-        {
-            dgvOpenPositions.Invoke((MethodInvoker)delegate
-            {
-                dgvOpenPositions.Columns.Clear();
-                dgvOpenPositions.Columns.Add("Nazwa", "Nazwa");
-                dgvOpenPositions.Columns.Add("Stan posiadania", "Stan posiadania");
-                dgvOpenPositions.Columns.Add("Wartość bieżąca", "Wartość bieżąca");
-            });
-        }
-
         private void RefreshOpenPositions()
         {
-            dgvOpenPositions.Invoke((MethodInvoker)delegate
-            {
-                dgvOpenPositions.Rows.Clear();
-
-                foreach (OpenPosition position in account.OpenPositions)
-                {
-                    Instrument instrument = position.Instrument;
-                    int volume = position.Volume;
-                    dgvOpenPositions.Rows.Add(instrument.GetFullName(), volume, volume * currentPrice);
-                }
-
-                dgvOpenPositions.AutoResizeColumns();
-                dgvOpenPositions.AutoResizeRows();
-            });
+            openPositionsTable.Refresh(account.OpenPositions, currentPrice);
         }
 
         private void SetInitialDepositWithdrawalText()
         {
-            txtDepositWithdrawal.Invoke((MethodInvoker)delegate
-            {
-                txtDepositWithdrawal.Text = "0.00";
-            });
+            depositWithdrawalAmountBox.Text = "0.00";
         }
 
         private void SetInitialInstrumentList()
@@ -193,7 +179,7 @@ namespace TradingPlatform
             }
             catch
             {
-                // ignore
+                // ignorowanie błędów parsowania - pozostanie ustawiona domyślna wartość: 0
             }
 
             decimal orderValue = currentOrderVolume * currentPrice;
